@@ -18,20 +18,18 @@ public class OrderRepository {
     }
 
     public void save(Order order) {
-        String sql = "INSERT INTO orders (customer_name, total) VALUES ('"
-                + order.getCustomerName() + "', " + order.getTotal() + ")";
-        jdbcTemplate.execute(sql);
+        String sql = "INSERT INTO orders (customer_name, total) VALUES (?, ?)";
+        jdbcTemplate.update(sql, order.getCustomerName(), order.getTotal());
     }
 
     public List<Order> findByCustomerName(String customerName) {
-        String sql = "SELECT id, customer_name, total FROM orders WHERE customer_name = '"
-                + customerName + "'";
+        String sql = "SELECT id, customer_name, total FROM orders WHERE customer_name = ?";
         return jdbcTemplate.query(sql, (rs, i) -> {
             Order order = new Order();
             order.setId(rs.getLong("id"));
             order.setCustomerName(rs.getString("customer_name"));
             order.setTotal(rs.getDouble("total"));
             return order;
-        });
+        }, customerName);
     }
 }
